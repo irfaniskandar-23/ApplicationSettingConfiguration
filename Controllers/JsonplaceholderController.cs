@@ -1,4 +1,5 @@
-﻿using ApplicationSettingConfiguration.Service;
+﻿using ApplicationSettingConfiguration.Constant;
+using ApplicationSettingConfiguration.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationSettingConfiguration.Controllers
@@ -17,9 +18,9 @@ namespace ApplicationSettingConfiguration.Controllers
         }
 
         [HttpGet("{path}")]
-        public async Task<IActionResult> GetTodos(string path)
+        public async Task<IActionResult> GetTodos(string pathKey)
         {
-            var url = _apiUrlResolver.Resolve("jsonplaceholder", path);
+            var url = _apiUrlResolver.Resolve(ApiNames.JsonPlaceHolder, pathKey);
 
             var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync(url);
