@@ -2,14 +2,14 @@
 {
     public class ApiSettings
     {
-        public int GlobalTimeout { get; set; } = 30;
-        public Dictionary<string, ApiEndpointSettings> Apis { get; set; } = new();
+        public int GlobalTimeout { get; init; } = 30;
+        public IReadOnlyDictionary<string, ApiEndpointSettings> Apis { get; init; } = new Dictionary<string, ApiEndpointSettings>();
     }
 
     public class ApiEndpointSettings
     {
-        public string? BaseUrl { get; set; }
-        public Dictionary<string, string> Paths { get; set; } = new();
-        public Dictionary<string, string> AdditionalSettings { get; set; } = new(); // To store extra settings
+        public string? BaseUrl { get; init; }
+        public IReadOnlyDictionary<string, string> Paths { get; init; } = new Dictionary<string, string>();
+        public IReadOnlyDictionary<string, string> AdditionalSettings { get; init; } = new Dictionary<string, string>();
     }
 }
