@@ -1,4 +1,8 @@
 
+using ApplicationSettingConfiguration.Domain;
+using ApplicationSettingConfiguration.Service;
+using Microsoft.Extensions.Options;
+
 namespace ApplicationSettingConfiguration
 {
     public class Program
@@ -7,7 +11,13 @@ namespace ApplicationSettingConfiguration
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            //binds the ApiSettings class to the ApiConfiguration section in appsettings.json
+            builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiConfiguration"));
+
+            // Register the ApiSettings class with the DI container
+            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<ApiSettings>>().Value);
+            builder.Services.AddSingleton<IApiUrlResolver, ApiUrlResolver>();
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

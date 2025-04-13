@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApplicationSettingConfiguration.Service;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationSettingConfiguration.Controllers
 {
@@ -6,24 +7,19 @@ namespace ApplicationSettingConfiguration.Controllers
     [ApiController]
     public class JsonplaceholderController : ControllerBase
     {
-
-        private readonly IConfiguration _configuration;
+        private readonly IApiUrlResolver _apiUrlResolver;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public JsonplaceholderController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public JsonplaceholderController(IHttpClientFactory httpClientFactory, IApiUrlResolver apiUrlResolver)
         {
-            _configuration = configuration;
+            _apiUrlResolver = apiUrlResolver;
             _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("{path}")]
         public async Task<IActionResult> GetTodos(string path)
         {
-            var jsonPlaceHolderAPISetting = _configuration.GetSection("ApiConfiguration:jsonplaceholder");
-            var baseUrl = jsonPlaceHolderAPISetting["baseUrl"];
-
-            var apiPath = jsonPlaceHolderAPISetting.GetValue<string>($"path:{path}");
-            var url = $"{baseUrl}/{apiPath}";
+            var url = _apiUrlResolver.Resolve("jsonplaceholder", path);
 
             var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync(url);
