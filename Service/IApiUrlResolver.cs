@@ -27,22 +27,32 @@ namespace ApplicationSettingConfiguration.Service
 
         public ApiUrlResolver(ApiSettings apiSettings)
         {
-            _apiSettings = apiSettings;
+            _apiSettings = apiSettings ?? throw new ArgumentNullException(nameof(apiSettings));
+
+            if (_apiSettings.Apis == null || _apiSettings.Apis.Count == 0)
+            {
+                throw new InvalidOperationException("No APIs configured in ApiSettings.");
+            }
         }
 
         public string Resolve(string apiName, string pathKey)
         {
-            if (!_apiSettings.Apis.TryGetValue(apiName, out var apiConfg))
+            if (!_apiSettings.Apis.TryGetValue(apiName, out var apiConfig))
             {
                 throw new ArgumentException($"API '{apiName}' not found.");
             }
 
-            if (!apiConfg.Paths.TryGetValue(pathKey, out var relativePath))
+            if (string.IsNullOrWhiteSpace(apiConfig.BaseUrl))
+            {
+                throw new ArgumentException($"Base URL for API '{apiName}' is not configured.");
+            }
+
+            if (!apiConfig.Paths.TryGetValue(pathKey, out var relativePath))
             {
                 throw new KeyNotFoundException($"Path '{pathKey}' not found in API '{apiName}'.");
             }
 
-            return $"{apiConfg.BaseUrl}/{relativePath}";
+            return $"{apiConfig.BaseUrl}/{relativePath}";
         }
     }
 }
